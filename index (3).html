@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=index.html">
+    <title>死生観対話イベント受付システム</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background: #34495e; }
+        .error { color: red; margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card" id="app">
+        <h2>イベント受付システム</h2>
+        <p>パスワードを入力してください</p>
+        <input type="password" id="pass" placeholder="パスワードを入力">
+        <button onclick="login()">ログイン</button>
+        <div class="error" id="err"></div>
+    </div>
+    <script>
+        function login() {
+            const p = document.getElementById('pass').value;
+            if(p === 'open-event-2026') {
+                document.getElementById('app').innerHTML = '<h3>認証成功</h3><p>死生観ポリシー及び属性入力画面へ進みます...</p>';
+                // 本来の画面遷移やスプレッドシート連携処理がここに走ります
+            } else {
+                document.getElementById('err').innerText = 'パスワードが違います';
+            }
+        }
+    </script>
+</body>
+</html>
