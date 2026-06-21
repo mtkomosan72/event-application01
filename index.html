@@ -2,35 +2,372 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=index.html">
-    <title>死生観対話イベント受付システム</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        button:hover { background: #34495e; }
-        .error { color: red; margin-top: 10px; font-size: 14px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>死生観対話イベント 参加申込・調整システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="card" id="app">
-        <h2>イベント受付システム</h2>
-        <p>パスワードを入力してください</p>
-        <input type="password" id="pass" placeholder="パスワードを入力">
-        <button onclick="login()">ログイン</button>
-        <div class="error" id="err"></div>
+<body class="bg-slate-50 py-10 px-4 font-sans text-slate-800">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8">
+        
+        <div id="sec-password" class="text-center py-8">
+            <h2 class="text-xl font-bold mb-4 text-slate-700">イベント受付システムへアクセス</h2>
+            <div class="max-w-sm mx-auto">
+                <input type="password" id="input-pass" placeholder="主催者から案内されたパスワード" 
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2 text-center">
+                <p id="pass-error" class="text-red-500 text-sm mb-4 hidden">パスワードが違います</p>
+                <button onclick="checkPassword()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                    認証する
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-policy" class="hidden">
+            <h1 class="text-2xl font-bold text-slate-900 mb-4">【重要】死生観対話ワークショップ 参加表明</h1>
+            <p class="text-slate-600 whitespace-pre-wrap mb-6 leading-relaxed">
+                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。
+                
+                以下のステップに従って、ご自身の属性と参加可能な日程をご回答ください。回答いただいた属性のバランスを考慮し、最適なグループ分け（ペアリング）を行います。
+            </p>
+            
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-6">
+                <h3 class="font-bold text-amber-900 mb-3">【重要】対話ポリシー5箇条</h3>
+                <ul class="space-y-3 text-sm text-amber-950">
+                    <li>1. ワークショップ内で得た他者のプライベートな情報や死生観について、外部（SNS等含む）に一切漏洩しません。</li>
+                    <li>2. 互いの価値観や現在の心境を否定せず、評価やアドバイスではなく「傾聴と尊重」に努めます。</li>
+                    <li>3. 話したくないことは無理に話す必要はありません（パスする権利を互いに尊重します）。</li>
+                    <li>4. 宗教の布教、特定の思想の押し付け、その他営利目的の勧誘行為は一切行いません。</li>
+                    <li>5. 万が一予定が変更になる場合は、限られた人数での調整のため、速やかに主催者に連絡します。</li>
+                </ul>
+            </div>
+
+            <label class="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" id="check-policy" onchange="togglePolicyButton()" class="h-5 w-5 rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-sm font-medium text-slate-700">上記のポリシー5箇条を熟読し、内容にすべて合意します。</span>
+            </label>
+
+            <div class="mt-8 flex justify-end">
+                <button id="btn-to-attr" disabled onclick="goSection('sec-attr')"
+                        class="px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed transition">
+                    Next (属性入力へ)
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-attr" class="hidden">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">あなたの属性情報について</h2>
+            <p class="text-xs text-slate-500 mb-6">※ここでご回答いただく内容は、主催者が当日のグループ組み合わせ・調整を行う際の参考情報としてのみ使用し、他の参加者に事前に公開されることはありません。</p>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">a. 年齢層をお教えください。</label>
+                <select id="attr-age" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>20代前半</option><option>20代後半</option>
+                    <option>30代前半</option><option>30代後半</option>
+                    <option>40代前半</option><option>40代後半</option>
+                    <option>50代前半</option><option>50代後半</option>
+                    <option>60代前半</option><option>60代後半</option>
+                    <option>70代前半</option><option>70代後半</option>
+                    <option>80代〜</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">b. 人生の指向性（いずれか、ご自身に「近い方」を選んでください）</label>
+                <div class="space-y-2 max-w-xl">
+                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+                        <input type="radio" name="attrLife" value="目標追求型" checked class="h-4 w-4 text-indigo-600">
+                        <span>目標を決めて追いかける</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+                        <input type="radio" name="attrLife" value="巡り合わせ型" class="h-4 w-4 text-indigo-600">
+                        <span>巡り合わせの中で今を生きる</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">c. ご自身の「死生観」について、現在の状態に最も近いものをお選びください。</label>
+                <div class="space-y-2 max-w-xl">
+                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+                        <input type="radio" name="attrView" value="言語化可能" checked class="h-4 w-4 text-indigo-600">
+                        <span>現時点のものはあり、言葉にして語ることができる</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+                        <input type="radio" name="attrView" value="感覚的" class="h-4 w-4 text-indigo-600">
+                        <span>なんとなく持っているが、言葉にはならない</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
+                        <input type="radio" name="attrView" value="未定" class="h-4 w-4 text-indigo-600">
+                        <span>それらしきものは、持てていない</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">d. ワークショップの交流スタイルに関する嗜好をお教えください。</label>
+                <select id="attrStyle" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>オンラインが望ましい</option>
+                    <option>オンラインでも対面式でも良い</option>
+                    <option>対面式が望ましい</option>
+                    <option>個別の状況によるので答えられない</option>
+                </select>
+            </div>
+
+            <div class="mb-6 border-t pt-4 border-slate-100">
+                <label class="block text-sm font-bold text-indigo-900 mb-2">【重要】対話する相手の組み合わせに関するご希望（必須）</label>
+                <p class="text-xs text-slate-500 mb-3">上記の回答（年齢層、人生の指向、死生観の言語化状態など）をベースに、どのような方との対話を希望しますか？</p>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer">
+                        <input type="radio" name="matchingPref" value="same" onchange="validateAttrSection()" class="h-4 w-4 text-indigo-600">
+                        <span class="text-sm font-medium text-indigo-950">できるだけ上記に回答した属性情報が近い人との組み合わせを希望</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer">
+                        <input type="radio" name="matchingPref" value="different" onchange="validateAttrSection()" class="h-4 w-4 text-indigo-600">
+                        <span class="text-sm font-medium text-emerald-950">できるだけ上記に回答した属性情報が違う人との組み合わせを希望</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input type="radio" name="matchingPref" value="none" onchange="validateAttrSection()" class="h-4 w-4 text-indigo-600">
+                        <span class="text-sm text-slate-700">組み合わせは特に気にしない</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-policy')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button id="btn-to-date" disabled onclick="goSection('sec-date')"
+                        class="px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed">
+                    Next (日程選択へ)
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-date" class="hidden">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">日程のご都合・お名前の入力</h2>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">回答者のお名前（本名をご入力ください）</label>
+                <input type="text" id="input-name" placeholder="例：山田 太郎"
+                       class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="mb-6 overflow-x-auto">
+                <label class="block text-sm font-bold text-slate-700 mb-3">各日程・場所のご都合を選択してください。</label>
+                <table class="w-full border-collapse border border-slate-200">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="border p-3 text-left text-sm font-bold text-slate-600">日時・場所の候補</th>
+                            <th class="border p-3 text-center text-sm font-bold text-slate-600 w-48">ご回答</th>
+                        </tr>
+                    </thead>
+                    <tbody id="date-table-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-attr')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button onclick="submitForm()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium text-white transition">
+                    回答を出席簿に登録する
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-thanks" class="hidden text-center py-10">
+            <div class="text-6xl text-emerald-500 mb-4">✓</div>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">ご回答ありがとうございました</h2>
+            <p class="text-slate-600 mb-6 text-sm">出欠および対話ペアの希望が登録されました。主催者からの調整結果をお待ちください。</p>
+            <button onclick="location.reload()" class="text-indigo-600 hover:underline text-sm">トップへ戻る（別の人の入力テスト用）</button>
+        </div>
+
+        <div id="sec-admin" class="hidden">
+            <div class="flex justify-between items-center mb-6 pb-2 border-b">
+                <h2 class="text-2xl font-bold text-purple-900">管理者・主催者用コントロール画面</h2>
+                <button onclick="location.reload()" class="bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded text-sm">ログアウト</button>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="font-bold mb-3 text-slate-800" id="admin-count">現在の回答者一覧</h3>
+                <div class="overflow-x-auto max-h-60 border rounded-lg">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-100 sticky top-0">
+                            <tr>
+                                <th class="p-2 border text-left">氏名</th>
+                                <th class="p-2 border text-left">年齢層</th>
+                                <th class="p-2 border text-left">人生の指向</th>
+                                <th class="p-2 border text-left">死生観の状態</th>
+                                <th class="p-2 border text-left">スタイル</th>
+                                <th class="p-2 border text-left">マッチング希望</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
+                <h3 class="font-bold text-purple-950 mb-2">🎯 独自属性対応・自動マッチングエンジン</h3>
+                <p class="text-xs text-purple-900 mb-4">
+                    参加者の4つの個別属性（年齢・指向・死生観の言語化・スタイル）を総合評価し、各自の「近い人がいい」「遠い人がいい」という希望を満たす2人1組の対話ペアを日程ごとに自動編成します。
+                </p>
+                <button onclick="runMatchingLogic()" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-sm">
+                    新・属性ロジックで自動マッチングを実行
+                </button>
+            </div>
+
+            <div id="matching-results-area" class="space-y-6 hidden">
+                <h3 class="font-bold text-lg border-b pb-2 text-slate-800">【調整結果】日程別対話ペア案</h3>
+                <div id="matching-results-list" class="space-y-6"></div>
+            </div>
+        </div>
+
     </div>
+
     <script>
-        function login() {
-            const p = document.getElementById('pass').value;
-            if(p === 'open-event-2026') {
-                document.getElementById('app').innerHTML = '<h3>認証成功</h3><p>死生観ポリシー及び属性入力画面へ進みます...</p>';
-                // 本来の画面遷移やスプレッドシート連携処理がここに走ります
+        const CONFIG = {
+            password: "open-event-2026",
+            adminPassword: "admin-mode",
+            sheetUrl: "https://docs.google.com/spreadsheets/d/1Myzu0J38xh_LyjHbYqhn_jSL6fXu6bZ_4NCyiRHkwVQ/edit?gid=0#gid=0",
+            dates: [
+                "7月10日(金) 19:00-21:00 (オンライン)",
+                "7月11日(土) 14:00-16:00 (都内リアル会場)",
+                "7月17日(金) 19:00-21:00 (オンライン)",
+                "7月19日(日) 10:00-12:00 (オンライン)"
+            ]
+        };
+
+        let allResponses = [];
+
+        window.onload = () => {
+            const tbody = document.getElementById('date-table-body');
+            CONFIG.dates.forEach((date, idx) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="border p-3 text-sm font-medium text-slate-700">${date}</td>
+                        <td class="border p-2">
+                            <select class="date-select w-full p-1.5 border rounded text-sm bg-white" data-idx="${idx}">
+                                <option value="" disabled selected>-- 選択してください --</option>
+                                <option value="1">1.参加したい</option>
+                                <option value="2">2.参加可能だが最優先ではない</option>
+                                <option value="3">3.既存予定の調整をすれば参加できる</option>
+                                <option value="4">4.参加できない</option>
+                            </select>
+                        </td>
+                    </tr>`;
+            });
+        };
+
+        function goSection(targetId) {
+            ['sec-password', 'sec-policy', 'sec-attr', 'sec-date', 'sec-thanks', 'sec-admin'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(targetId).classList.remove('hidden');
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('input-pass').value;
+            if (input === CONFIG.password) {
+                goSection('sec-policy');
+            } else if (input === CONFIG.adminPassword) {
+                goSection('sec-admin');
+                fetchAdminData();
             } else {
-                document.getElementById('err').innerText = 'パスワードが違います';
+                document.getElementById('pass-error').classList.remove('hidden');
             }
         }
-    </script>
-</body>
-</html>
+
+        function togglePolicyButton() {
+            const agreed = document.getElementById('check-policy').checked;
+            const btn = document.getElementById('btn-to-attr');
+            btn.disabled = !agreed;
+            btn.className = agreed ? "px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition" : "px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed";
+        }
+
+        function validateAttrSection() {
+            const checked = document.querySelector('input[name="matchingPref"]:checked');
+            const btn = document.getElementById('btn-to-date');
+            if (checked) {
+                btn.disabled = false;
+                btn.className = "px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition";
+            }
+        }
+
+        async function submitForm() {
+            const name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('お名前を入力してください');
+
+            const selects = document.querySelectorAll('.date-select');
+            let dateResponses = {};
+            let completed = true;
+            selects.forEach(sel => {
+                const idx = sel.getAttribute('data-idx');
+                if (!sel.value) completed = false;
+                dateResponses[idx] = sel.value;
+            });
+
+            if (!completed) return alert('すべての日程にご回答ください');
+
+            const age = document.getElementById('attr-age').value;
+            const life = document.querySelector('input[name="attrLife"]:checked').value;
+            const view = document.querySelector('input[name="attrView"]:checked').value;
+            const style = document.getElementById('attrStyle').value;
+            const pref = document.querySelector('input[name="matchingPref"]:checked').value;
+
+            const responseData = {
+                name: name, age: age, life: life, view: view, style: style, matchingPreference: pref, dates: dateResponses
+            };
+
+            let currentData = JSON.parse(localStorage.getItem('event_db_v2')) || [];
+            currentData.push(responseData);
+            localStorage.setItem('event_db_v2', JSON.stringify(currentData));
+
+            goSection('sec-thanks');
+        }
+
+        function fetchAdminData() {
+            const sampleData = [
+                { name: "木村 さくら", age: "20代後半", life: "目標追求型", view: "言語化可能", style: "オンラインが望ましい", matchingPreference: "different", dates: { 0: "1", 1: "2", 2: "4", 3: "1" } },
+                { name: "高橋 健二", age: "50代前半", life: "巡り合わせ型", view: "感覚的", style: "対面式が望ましい", matchingPreference: "different", dates: { 0: "1", 1: "4", 2: "1", 3: "3" } },
+                { name: "渡辺 直樹", age: "30代後半", life: "目標追求型", view: "言語化可能", style: "オンラインでも対面式でも良い", matchingPreference: "same", dates: { 0: "2", 1: "1", 2: "1", 3: "4" } },
+                { name: "佐藤 美咲", age: "20代前半", life: "巡り合わせ型", view: "未定", style: "オンラインが望ましい", matchingPreference: "none", dates: { 0: "4", 1: "1", 2: "2", 3: "1" } },
+                { name: "三浦 浩二", age: "60代後半", life: "巡り合わせ型", view: "感覚的", style: "対面式が望ましい", matchingPreference: "same", dates: { 0: "1", 1: "1", 2: "4", 3: "4" } }
+            ];
+            
+            const saved = JSON.parse(localStorage.getItem('event_db_v2')) || [];
+            allResponses = [...sampleData, ...saved];
+
+            document.getElementById('admin-count').innerText = `現在の回答者一覧 (${allResponses.length}名)`;
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            
+            allResponses.forEach(p => {
+                const prefText = p.matchingPreference === "same" ? "近い人" : (p.matchingPreference === "different" ? "違う人" : "気にしない");
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-2 border font-medium text-slate-900">${p.name}</td>
+                        <td class="p-2 border text-slate-600">${p.age}</td>
+                        <td class="p-2 border text-slate-600">${p.life}</td>
+                        <td class="p-2 border text-slate-600">${p.view}</td>
+                        <td class="p-2 border text-slate-600">${p.style}</td>
+                        <td class="p-2 border font-medium text-indigo-600">${prefText}</td>
+                    </tr>`;
+            });
+        }
+
+        function runMatchingLogic() {
+            const resultsList = document.getElementById('matching-results-list');
+            resultsList.innerHTML = '';
+
+            CONFIG.dates.forEach((dateText, dateIdx) => {
+                const availablePeople = allResponses.filter(p => 
+                    p.dates[dateIdx] === "1" || p.dates[dateIdx] === "2" || p.dates[dateIdx] === "3"
+                );
+
+                let paired = []; let groups = [];
+
+                for (let i = 0; i < availablePeople.length; i++) {
+                    if (paired.includes(availablePeople[i].name)) continue;
+                    let bestMatchIdx = -1; let bestScore = -999;
+
+                    for (let j = i + 1; j < availablePeople.length; j++) {
+                        if (paired.includes(
