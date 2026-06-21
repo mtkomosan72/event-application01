@@ -25,19 +25,17 @@
         <div id="sec-policy" class="hidden">
             <h1 class="text-2xl font-bold text-slate-900 mb-4">【重要】死生観対話ワークショップ 参加表明</h1>
             <p class="text-slate-600 whitespace-pre-wrap mb-6 leading-relaxed">
-                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。
-                
-                以下のステップに従って、ご自身の属性と参加可能な日程をご回答ください。回答いただいた属性のバランスを考慮し、最適なグループ分け（ペアリング）を行います。
+                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。属性のバランスを考慮し、最適なグループ分けを行います。
             </p>
             
             <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-6">
                 <h3 class="font-bold text-amber-900 mb-3">【重要】対話ポリシー5箇条</h3>
                 <ul class="space-y-3 text-sm text-amber-950">
-                    <li>1. ワークショップ内で得た他者のプライベートな情報や死生観について、外部（SNS等含む）に一切漏洩しません。</li>
-                    <li>2. 互いの価値観や現在の心境を否定せず、評価やアドバイスではなく「傾聴と尊重」に努めます。</li>
-                    <li>3. 話したくないことは無理に話す必要はありません（パスする権利を互いに尊重します）。</li>
-                    <li>4. 宗教の布教、特定の思想の押し付け、その他営利目的の勧誘行為は一切行いません。</li>
-                    <li>5. 万が一予定が変更になる場合は、限られた人数での調整のため、速やかに主催者に連絡します。</li>
+                    <li>1. ワークショップ内で得た他者のプライベートな情報や死生観について、外部に一切漏洩しません。</li>
+                    <li>2. 互いの価値観や現在の心境を否定せず、「傾聴と尊重」に努めます。</li>
+                    <li>3. 話したくないことは無理に話す必要はありません。</li>
+                    <li>4. 宗教の布教、特定の思想の押し付け、その他勧誘行為は一切行いません。</li>
+                    <li>5. 予定が変更になる場合は、速やかに主催者に連絡します。</li>
                 </ul>
             </div>
 
@@ -56,34 +54,118 @@
 
         <div id="sec-attr" class="hidden">
             <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">あなたの属性情報について</h2>
-            <p class="text-xs text-slate-500 mb-6">※ここでご回答いただく内容は、主催者が当日のグループ組み合わせ・調整を行う際の参考情報としてのみ使用し、他の参加者に事前に公開されることはありません。</p>
             
             <div class="mb-6">
                 <label class="block text-sm font-bold text-slate-700 mb-2">a. 年齢層をお教えください。</label>
                 <select id="attr-age" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
-                    <option>20代前半</option><option>20代後半</option>
-                    <option>30代前半</option><option>30代後半</option>
-                    <option>40代前半</option><option>40代後半</option>
-                    <option>50代前半</option><option>50代後半</option>
-                    <option>60代前半</option><option>60代後半</option>
-                    <option>70代前半</option><option>70代後半</option>
-                    <option>80代〜</option>
+                    <option>20代</option><option>30代</option><option>40代</option><option>50代</option><option>60代〜</option>
                 </select>
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-bold text-slate-700 mb-2">b. 人生の指向性（いずれか、ご自身に「近い方」を選んでください）</label>
-                <div class="space-y-2 max-w-xl">
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrLife" value="目標追求型" checked class="h-4 w-4 text-indigo-600">
-                        <span>目標を決めて追いかける</span>
+                <label class="block text-sm font-bold text-slate-700 mb-2">b. 人生の指向性</label>
+                <select id="attr-life" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>目標追求型（目標を決めて追いかける）</option>
+                    <option>巡り合わせ型（巡り合わせの中で今を生きる）</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">c. ご自身の「死生観」について</label>
+                <select id="attr-view" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>現時点のものがあり、言葉にして語ることができる</option>
+                    <option>なんとなく持っているが、言葉にはならない</option>
+                    <option>それらしきものは、持てていない</option>
+                </select>
+            </div>
+
+            <div class="mb-6 border-t pt-4 border-slate-100">
+                <label class="block text-sm font-bold text-indigo-900 mb-2">【重要】対話する相手の組み合わせに関するご希望</label>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input type="radio" name="matchingPref" value="same" checked class="h-4 w-4 text-indigo-600">
+                        <span class="text-sm font-medium">できるだけ属性情報が近い人との組み合わせを希望</span>
                     </label>
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrLife" value="巡り合わせ型" class="h-4 w-4 text-indigo-600">
-                        <span>巡り合わせの中で今を生きる</span>
+                    <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input type="radio" name="matchingPref" value="different" class="h-4 w-4 text-indigo-600">
+                        <span class="text-sm font-medium">できるだけ属性情報が違う人との組み合わせを希望</span>
                     </label>
                 </div>
             </div>
 
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-policy')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button onclick="goSection('sec-date')" class="px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                    Next (日程選択へ)
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-date" class="hidden">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">日程のご都合・お名前の入力</h2>
+            
             <div class="mb-6">
-                <label class="block text-sm font-bold
+                <label class="block text-sm font-bold text-slate-700 mb-2">回答者のお名前（本名をご入力ください）</label>
+                <input type="text" id="input-name" placeholder="例：山田 太郎" class="w-full md:w-1/2 px-4 py-2 border rounded-lg">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">参加希望日にチェックを入れてください（複数選択可）</label>
+                <div class="space-y-2 bg-slate-50 p-4 rounded-lg border">
+                    <label class="flex items-center space-x-3"><input type="checkbox" name="date-opt" value="0" class="h-4 w-4"> <span>7月10日(金) 19:00-21:00 (オンライン)</span></label>
+                    <label class="flex items-center space-x-3"><input type="checkbox" name="date-opt" value="1" class="h-4 w-4"> <span>7月11日(土) 14:00-16:00 (都内リアル会場)</span></label>
+                    <label class="flex items-center space-x-3"><input type="checkbox" name="date-opt" value="2" class="h-4 w-4"> <span>7月17日(金) 19:00-21:00 (オンライン)</span></label>
+                    <label class="flex items-center space-x-3"><input type="checkbox" name="date-opt" value="3" class="h-4 w-4"> <span>7月19日(日) 10:00-12:00 (オンライン)</span></label>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-attr')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button onclick="submitForm()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium text-white transition">
+                    回答を出席簿に登録する
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-thanks" class="hidden text-center py-10">
+            <div class="text-6xl text-emerald-500 mb-4">✓</div>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">ご回答ありがとうございました</h2>
+            <p class="text-slate-600 mb-6 text-sm">出欠および対話ペアの希望がローカルデータベースに登録されました。</p>
+        </div>
+
+    </div>
+
+    <script>
+        const PASS = "open-event-2026";
+
+        function goSection(targetId) {
+            ['sec-password', 'sec-policy', 'sec-attr', 'sec-date', 'sec-thanks'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(targetId).classList.remove('hidden');
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('input-pass').value;
+            if (input === PASS) {
+                goSection('sec-policy');
+            } else {
+                document.getElementById('pass-error').classList.remove('hidden');
+            }
+        }
+
+        function togglePolicyButton() {
+            const agreed = document.getElementById('check-policy').checked;
+            const btn = document.getElementById('btn-to-attr');
+            btn.disabled = !agreed;
+            btn.className = agreed ? "px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition" : "px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed";
+        }
+
+        function submitForm() {
+            const name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('お名前を入力してください');
+            goSection('sec-thanks');
+        }
+    </script>
+</body>
+</html>
