@@ -179,4 +179,54 @@
                 </button>
             </div>
 
-            <div id="
+            <div id="matching-results-area" class="space-y-6 hidden">
+                <h3 class="font-bold text-lg border-b pb-2 text-slate-800">【調整結果】日程別対話ペア案</h3>
+                <div id="matching-results-list" class="space-y-4"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var CONFIG = {
+            password: "open-event-2026",
+            adminPassword: "admin-mode",
+            dates: [
+                "7月10日(金) 19:00-21:00 (オンライン)",
+                "7月11日(土) 14:00-16:00 (都内リアル会場)",
+                "7月17日(金) 19:00-21:00 (オンライン)",
+                "7月19日(日) 10:00-12:00 (オンライン)"
+            ]
+        };
+
+        window.onload = function() {
+            var area = document.getElementById('date-checkbox-area');
+            area.innerHTML = '';
+            CONFIG.dates.forEach(function(date, idx) {
+                area.innerHTML += '<label class="flex items-center space-x-3 p-1 hover:bg-slate-100 rounded cursor-pointer">' +
+                    '<input type="checkbox" name="date-opt" value="' + idx + '" class="h-4 w-4 text-indigo-600">' +
+                    '<span class="text-sm text-slate-700">' + date + '</span>' +
+                '</label>';
+            });
+        };
+
+        function goSection(targetId) {
+            ['sec-password', 'sec-policy', 'sec-attr', 'sec-date', 'sec-thanks', 'sec-admin'].forEach(function(id) {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(targetId).classList.remove('hidden');
+        }
+
+        function checkPassword() {
+            var input = document.getElementById('input-pass').value.trim();
+            if (input === CONFIG.password) {
+                goSection('sec-policy');
+            } else if (input === CONFIG.adminPassword) {
+                goSection('sec-admin');
+                renderAdminTable();
+            } else {
+                document.getElementById('pass-error').classList.remove('hidden');
+            }
+        }
+
+        function
