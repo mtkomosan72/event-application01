@@ -25,7 +25,7 @@
         <div id="sec-policy" class="hidden">
             <h1 class="text-2xl font-bold text-slate-900 mb-4">【重要】死生観対話ワークショップ 参加表明</h1>
             <p class="text-slate-600 whitespace-pre-wrap mb-6 leading-relaxed">
-                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。属性のバランスを考慮し、最適なグループ分けを行います。
+                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。属性のバランスを考慮し、最適なグループ分け（ペアリング）を行います。
             </p>
             
             <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-6">
@@ -165,10 +165,10 @@
             password: "open-event-2026",
             adminPassword: "admin-mode",
             dates: [
-                "7月10日(金) 19:00-21:00 (オンライン)",
-                "7月11日(土) 14:00-16:00 (都内リアル会場)",
-                "7月17日(金) 19:00-21:00 (オンライン)",
-                "7月19日(日) 10:00-12:00 (オンライン)"
+                "7月10日金曜 19時-21時 オンライン",
+                "7月11日土曜 14時-16時 都内リアル会場",
+                "7月17日金曜 19時-21時 オンライン",
+                "7月19日日曜 10時-12時 オンライン"
             ]
         };
 
@@ -241,4 +241,98 @@
 
         function getMockOrSavedData() {
             var sampleData = [
-                { name: "木村 さくら", age: "20代後半", life: "目標追求型（目標を決めて追いかける）", view: "現時点のものはあり、言葉にして語ることができる", dates: [0, 1, 3] },
+                { name: "木村 さくら", age: "20代後半", life: "目標追求型", view: "現時点のものはあり、言葉にして語ることができる", dates: [0, 1, 3] },
+                { name: "高橋 健二", age: "50代前半", life: "巡り合わせ型", view: "なんとなく持っているが、言葉にはならない", dates: [0, 2] },
+                { name: "渡辺 直樹", age: "30代後半", life: "目標追求型", view: "現時点のものはあり、言葉にして語ることができる", dates: [1, 2] },
+                { name: "佐藤 美咲", age: "20代前半", life: "巡り合わせ型", view: "なんとなく持っているが、言葉にはならない", dates: [1, 3] },
+                { name: "三浦 浩二", age: "60代〜", life: "巡り合わせ型", view: "なんとなく持っているが、言葉にはならない", dates: [0, 1] }
+            ];
+            var saved = JSON.parse(localStorage.getItem('event_db_v4')) || [];
+            return sampleData.concat(saved);
+        }
+
+        function renderAdminTable() {
+            var data = getMockOrSavedData();
+            var countEl = document.getElementById('admin-count');
+            if (countEl) countEl.innerText = "現在の回答者一覧 (" + data.length + "名 ※サンプル5名含む)";
+            
+            var tbody = document.getElementById('admin-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            data.forEach(function(p) {
+                tbody.innerHTML += '<tr class="hover:bg-slate-50 border-b">' +
+                    '<td class="p-2 font-bold text-slate-900">' + p.name + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.age + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.life + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.view + '</td>' +
+                '</tr>';
+            });
+        }
+
+        function runMatchingLogic() {
+            var data = getMockOrSavedData();
+            var resultsList = document.getElementById('matching-results-list');
+            if (!resultsList) return;
+            resultsList.innerHTML = '';
+
+            CONFIG.dates.forEach(function(dateText, dateIdx) {
+                var available = data.filter(function(p) { return p.dates.indexOf(dateIdx) !== -1; });
+                var pairedNames = [];
+                var pairsHtml = '';
+
+                for (var i = 0; i < available.length; i++) {
+                    if (pairedNames.indexOf(available[i].name) !== -1) continue;
+                    var bestMatchIdx = -1;
+                    var bestScore = -999;
+
+                    for (var j = i + 1; j < available.length; j++) {
+                        if (pairedNames.indexOf(available[j].name) !== -1) continue;
+
+                        var score = 0;
+                        var pA = available[i];
+                        var pB = available[j];
+
+                        var sim = (pA.age === pB.age ? 1 : 0) + (pA.life === pB.life ? 1 : 0) + (pA.view === pB.view ? 1 : 0);
+                        score += sim * 3;
+
+                        if (score > bestScore) { bestScore = score; bestMatchIdx = j; }
+                    }
+
+                    if (bestMatchIdx !== -1) {
+                        var m1 = available[i];
+                        var m2 = available[bestMatchIdx];
+                        pairedNames.push(m1.name, m2.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-indigo-50/50 border-indigo-100 flex flex-col gap-1">' +
+                            '<div class="font-bold text-indigo-900">対話ペア</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m1.name + ' (' + m1.age + ')</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m2.name + ' (' + m2.age + ')</div>' +
+                        '</div>';
+                    } else {
+                        var m1 = available[i];
+                        pairedNames.push(m1.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-amber-50 border-amber-200">' +
+                            '<div class="font-bold text-amber-900">👤 ' + m1.name + ' (要手動調整)</div>' +
+                            '<div class="text-[11px] text-amber-700">奇数端数のためペアが組めませんでした。</div>' +
+                        '</div>';
+                    }
+                }
+
+                if (available.length === 0) {
+                    pairsHtml = '<div class="text-xs text-slate-400 p-2">この日程の参加希望者はゼロです</div>';
+                }
+
+                resultsList.innerHTML += '<div class="border rounded-xl p-4 bg-white shadow-sm border-slate-200">' +
+                    '<h4 class="font-bold text-slate-900 bg-slate-100 px-3 py-1.5 rounded-md mb-3 text-xs flex justify-between items-center">' +
+                        '<span>📅 ' + dateText + '</span>' +
+                        '<span class="text-indigo-600 font-bold">希望者: ' + available.length + '名</span>' +
+                    '</h4>' +
+                    '<div class="grid md:grid-cols-2 gap-3">' + pairsHtml + '</div>' +
+                '</div>';
+            });
+
+            document.getElementById('matching-results-area').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
