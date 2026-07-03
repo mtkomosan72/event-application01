@@ -58,7 +58,11 @@
             <div class="mb-6">
                 <label class="block text-sm font-bold text-slate-700 mb-2">a. 年齢層をお教えください。</label>
                 <select id="attr-age" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
-                    <option>20代</option><option>30代</option><option>40代</option><option>50代</option><option>60代以上</option>
+                    <option>20代前半</option><option>20代後半</option>
+                    <option>30代前半</option><option>30代後半</option>
+                    <option>40代前半</option><option>40代後半</option>
+                    <option>50代前半</option><option>50代後半</option>
+                    <option>60代以上</option>
                 </select>
             </div>
 
@@ -106,8 +110,8 @@
             </div>
 
             <div class="mb-6 overflow-x-auto">
-                <label class="block text-sm font-bold text-slate-700 mb-3">参加可能（優先度高）な日程にすべてチェックを入れてください。</label>
-                <div class="space-y-2 bg-slate-50 p-4 rounded-lg border" id="date-checkbox-area">
+                <label class="block text-sm font-bold text-slate-700 mb-3">各日程について、ご希望の優先順位を3つまでお選びください。</label>
+                <div class="bg-slate-50 p-4 rounded-lg border space-y-4" id="date-select-area">
                     </div>
             </div>
 
@@ -122,7 +126,7 @@
         <div id="sec-thanks" class="hidden text-center py-10">
             <div class="text-6xl text-emerald-500 mb-4">✓</div>
             <h2 class="text-2xl font-bold mb-2 text-slate-800">ご回答ありがとうございました</h2>
-            <p class="text-slate-600 mb-6 text-sm">登録されました。主催者画面（admin-mode）で最新の状況を確認できます。</p>
+            <p class="text-slate-600 mb-6 text-sm">主催者から連絡させて頂きますので、しばしお待ちくださいませ。</p>
             <button onclick="location.reload()" class="text-indigo-600 hover:underline text-sm">トップへ戻る</button>
         </div>
 
@@ -151,17 +155,17 @@
             </div>
 
             <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
-                <h3 class="font-bold text-purple-950 mb-2">🎯 日程別グループマッチング・シミュレーター</h3>
+                <h3 class="font-bold text-purple-950 mb-2">🎯 2段階条件式：日程最優先グループマッチング</h3>
                 <p class="text-xs text-purple-900 mb-4">
-                    ペアで余りを出さず、各参加者のマッチング希望（似たタイプが良いか、違うタイプが良いか）に合わせた最適な日程配置を計算します。
+                    第一ロジックとして参加者の希望順位（第1〜第3希望）をベースに日程を決定し、第二ロジックとしてその日程内での属性の相性（共感/多様性）をシミュレートします。
                 </p>
-                <button onclick="runGroupMatching()" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-sm">
-                    日程別グループマッチングを実行
+                <button onclick="runPriorityGroupMatching()" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-sm">
+                    希望順位ベースでマッチングを実行
                 </button>
             </div>
 
             <div id="matching-results-area" class="space-y-6 hidden">
-                <h3 class="font-bold text-lg border-b pb-2 text-slate-800">【調整結果】日程別の最適配置グループ一覧</h3>
+                <h3 class="font-bold text-lg border-b pb-2 text-slate-800">【調整結果】希望順位を最優先した最適配置一覧</h3>
                 <div id="matching-results-list" class="space-y-4"></div>
             </div>
         </div>
@@ -181,14 +185,19 @@
         };
 
         window.onload = function() {
-            var area = document.getElementById('date-checkbox-area');
+            var area = document.getElementById('date-select-area');
             if (area) {
                 area.innerHTML = '';
                 CONFIG.dates.forEach(function(date, idx) {
-                    area.innerHTML += '<label class="flex items-center space-x-3 p-1 hover:bg-slate-100 rounded cursor-pointer">' +
-                        '<input type="checkbox" name="date-opt" value="' + idx + '" class="h-4 w-4 text-indigo-600">' +
-                        '<span class="text-sm text-slate-700">' + date + '</span>' +
-                    '</label>';
+                    area.innerHTML += '<div class="flex flex-col sm:flex-row sm:items-center justify-between p-2 border-b gap-2">' +
+                        '<span class="text-sm font-medium text-slate-700">' + date + '</span>' +
+                        '<select class="date-priority-select px-3 py-1.5 border rounded bg-white text-xs" data-idx="' + idx + '">' +
+                            '<option value="none">選択しない：参加不可</option>' +
+                            '<option value="1" ' + (idx===0?'selected':'') + '>第1希望：最優先</option>' +
+                            '<option value="2">第2希望</option>' +
+                            '<option value="3">第3希望</option>' +
+                        '</select>' +
+                    '</div>';
                 });
             }
         };
@@ -228,9 +237,13 @@
             var name = document.getElementById('input-name').value.trim();
             if (!name) return alert('お名前を入力してください');
 
-            var boxes = document.querySelectorAll('input[name="date-opt"]:checked');
-            var selectedDates = [];
-            boxes.forEach(function(b) { selectedDates.push(parseInt(b.value)); });
+            var selects = document.querySelectorAll('.date-priority-select');
+            var preferences = {}; // 各日程の希望順位を保存 (例: {"0": "1", "1": "none"})
+            
+            selects.forEach(function(sel) {
+                var dateIdx = sel.getAttribute('data-idx');
+                preferences[dateIdx] = sel.value;
+            });
 
             var age = document.getElementById('attr-age').value;
             var life = document.getElementById('attr-life').value;
@@ -238,27 +251,28 @@
             var matchPref = document.getElementById('attr-match-pref').value;
 
             var responseData = {
-                name: name, age: age, life: life, view: view, matchPref: matchPref, dates: selectedDates
+                name: name, age: age, life: life, view: view, matchPref: matchPref, preferences: preferences
             };
 
-            var currentData = JSON.parse(localStorage.getItem('event_db_v5')) || [];
+            var currentData = JSON.parse(localStorage.getItem('event_db_v6')) || [];
             currentData.push(responseData);
-            localStorage.setItem('event_db_v5', JSON.stringify(currentData));
+            localStorage.setItem('event_db_v6', JSON.stringify(currentData));
 
             goSection('sec-thanks');
         }
 
         function getMockOrSavedData() {
+            // preferencesに各参加者の第1希望("1")、第2希望("2")を登録したモック
             var sampleData = [
-                { name: "木村 さくら", age: "20代", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "same", dates: [0, 1] },
-                { name: "高橋 健二", age: "50代", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "diff", dates: [0, 2] },
-                { name: "渡辺 直樹", age: "30代", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "same", dates: [1, 2] },
-                { name: "佐藤 美咲", age: "20代", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "diff", dates: [1, 3] },
-                { name: "三浦 浩二", age: "60代以上", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "same", dates: [0, 1, 3] },
-                { name: "鈴木 明美", age: "30代", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "diff", dates: [0, 3] },
-                { name: "田中 健太", age: "40代", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "same", dates: [2, 3] }
+                { name: "木村 さくら", age: "20代後半", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "same", preferences: {"0":"1", "1":"2", "2":"none", "3":"none"} },
+                { name: "高橋 健二", age: "50代前半", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "diff", preferences: {"0":"2", "1":"none", "2":"1", "3":"none"} },
+                { name: "渡辺 直樹", age: "30代前半", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "same", preferences: {"0":"none", "1":"1", "2":"2", "3":"none"} },
+                { name: "佐藤 美咲", age: "20代前半", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "diff", preferences: {"0":"none", "1":"1", "2":"none", "3":"2"} },
+                { name: "三浦 浩二", age: "60代以上", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "same", preferences: {"0":"1", "1":"2", "2":"none", "3":"3"} },
+                { name: "鈴木 明美", age: "30代前半", life: "目標追求型：目標を決めて追いかける", view: "現時点のものはあり、言葉にして語ることができる", matchPref: "diff", preferences: {"0":"1", "1":"none", "2":"none", "3":"2"} },
+                { name: "田中 健太", age: "40代前半", life: "巡り合わせ型：巡り合わせの中で今を生きる", view: "なんとなく持っているが、言葉にはならない", matchPref: "same", preferences: {"0":"none", "1":"none", "2":"1", "3":"2"} }
             ];
-            var saved = JSON.parse(localStorage.getItem('event_db_v5')) || [];
+            var saved = JSON.parse(localStorage.getItem('event_db_v6')) || [];
             return sampleData.concat(saved);
         }
 
@@ -283,46 +297,63 @@
             });
         }
 
-        function runGroupMatching() {
+        function runPriorityGroupMatching() {
             var data = getMockOrSavedData();
             var resultsList = document.getElementById('matching-results-list');
             if (!resultsList) return;
             resultsList.innerHTML = '';
 
             CONFIG.dates.forEach(function(dateText, dateIdx) {
-                var available = data.filter(function(p) { return p.dates.indexOf(dateIdx) !== -1; });
+                // 第一ロジック：この日程を希望（第1〜第3希望のいずれか）している人を集める
+                var candidates = data.filter(function(p) {
+                    return p.preferences && p.preferences[dateIdx] && p.preferences[dateIdx] !== 'none';
+                });
+
                 var membersHtml = '';
-                
-                if (available.length === 0) {
-                    membersHtml = '<div class="text-xs text-slate-400 p-2">この日程の参加希望者は現在いません</div>';
+
+                if (candidates.length === 0) {
+                    membersHtml = '<div class="text-xs text-slate-400 p-2">この日程を希望する参加者は現在いません</div>';
                 } else {
-                    available.forEach(function(member) {
-                        var prefBadge = member.matchPref === "same" 
+                    // 希望度の高い順（第1希望 -> 第2希望 -> 第3希望）に並び替える
+                    candidates.sort(function(a, b) {
+                        return parseInt(a.preferences[dateIdx]) - parseInt(b.preferences[dateIdx]);
+                    });
+
+                    candidates.forEach(function(member) {
+                        var userPriority = member.preferences[dateIdx]; // 本人にとって何希望の日程か
+                        
+                        var priorityBadge = '';
+                        if (userPriority === '1') priorityBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-red-100 text-red-800 font-bold">第1希望</span>';
+                        else if (userPriority === '2') priorityBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-bold">第2希望</span>';
+                        else priorityBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-700">第3希望</span>';
+
+                        var matchPrefBadge = member.matchPref === "same" 
                             ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">共感重視</span>' 
                             : '<span class="px-1.5 py-0.5 rounded text-[10px] bg-orange-100 text-orange-800">多様性重視</span>';
-                        
+
+                        // 第二ロジック：属性共感スコアの計算
                         var matchScoreCount = 0;
-                        var totalOthers = available.length - 1;
-                        
+                        var totalOthers = candidates.length - 1;
+
                         if (totalOthers > 0) {
-                            available.forEach(function(other) {
+                            candidates.forEach(function(other) {
                                 if (member.name === other.name) return;
                                 var isSimilar = (member.life === other.life && member.view === other.view);
                                 if (member.matchPref === "same" && isSimilar) matchScoreCount++;
                                 if (member.matchPref === "diff" && !isSimilar) matchScoreCount++;
                             });
                         }
-                        
+
                         var satisfactionRate = totalOthers > 0 ? Math.round((matchScoreCount / totalOthers) * 100) : 100;
-                        
+
                         membersHtml += '<div class="p-3 border rounded-lg bg-slate-50 border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">' +
                             '<div>' +
-                                '<div class="font-bold text-slate-900 flex items-center gap-2 text-sm">' + member.name + ' <span class="text-xs font-normal text-slate-500">(' + member.age + ')</span></div>' +
-                                '<div class="text-[11px] text-slate-600 mt-1">' + member.life.split('：')[0] + ' / ' + member.view.split('：')[0] + '</div>' +
+                                '<div class="font-bold text-slate-900 flex items-center gap-2 text-sm">' + member.name + ' ' + priorityBadge + '</div>' +
+                                '<div class="text-[11px] text-slate-600 mt-1">' + member.age + ' / ' + member.life.split('：')[0] + '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-2 justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0">' +
-                                prefBadge +
-                                '<span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">マッチ度: ' + satisfactionRate + '%</span>' +
+                                matchPrefBadge +
+                                '<span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">共感適合: ' + satisfactionRate + '%</span>' +
                             '</div>' +
                         '</div>';
                     });
@@ -331,7 +362,7 @@
                 resultsList.innerHTML += '<div class="border rounded-xl p-4 bg-white shadow-sm border-slate-200">' +
                     '<h4 class="font-bold text-slate-900 bg-slate-100 px-3 py-2 rounded-md mb-3 text-xs flex justify-between items-center">' +
                         '<span>📅 ' + dateText + '</span>' +
-                        '<span class="text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded">配置メンバー: ' + available.length + '名</span>' +
+                        '<span class="text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded">配置候補: ' + candidates.length + '名</span>' +
                     '</h4>' +
                     '<div class="space-y-2">' + membersHtml + '</div>' +
                 '</div>';
