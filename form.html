@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>死生観対話イベント 参加申込・調整システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 py-10 px-4 font-sans text-slate-800">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8">
+        
+        <div id="sec-password" class="text-center py-8">
+            <h2 class="text-xl font-bold mb-4 text-slate-700">イベント受付システムへアクセス</h2>
+            <div class="max-w-sm mx-auto">
+                <input type="password" id="input-pass" placeholder="案内されたパスワード" 
+                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2 text-center">
+                <p id="pass-error" class="text-red-500 text-sm mb-4 hidden">パスワードが違います</p>
+                <button onclick="checkPassword()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                    認証する
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-policy" class="hidden">
+            <h1 class="text-2xl font-bold text-slate-900 mb-4">【重要】死生観対話ワークショップ 参加表明</h1>
+            <p class="text-slate-600 whitespace-pre-wrap mb-6 leading-relaxed">
+                本イベントは、死生観という正解のない問いについて、異なるバックグラウンドを持つ参加者同士が深く丁寧に対話を深めるためのマッチング型ワークショップです。属性のバランスを考慮し、最適なグループ分け（ペアリング）を行います。
+            </p>
+            
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-6">
+                <h3 class="font-bold text-amber-900 mb-3">【重要】対話ポリシー5箇条</h3>
+                <ul class="space-y-3 text-sm text-amber-950">
+                    <li>1. ワークショップ内で得た他者のプライベートな情報や死生観について、外部に一切漏洩しません。</li>
+                    <li>2. 互いの価値観や現在の心境を否定せず、「傾聴と尊重」に努めます。</li>
+                    <li>3. 話したくないことは無理に話す必要はありません。</li>
+                    <li>4. 宗教の布教、特定の思想の押し付け、その他営利目的の勧誘行為は一切行いません。</li>
+                    <li>5. 万が一予定が変更になる場合は、限られた人数での調整のため、速やかに主催者に連絡します。</li>
+                </ul>
+            </div>
+
+            <label class="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" id="check-policy" onchange="togglePolicyButton()" class="h-5 w-5 rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-sm font-medium text-slate-700">上記のポリシー5箇条を熟読し、内容にすべて合意します。</span>
+            </label>
+
+            <div class="mt-8 flex justify-end">
+                <button id="btn-to-attr" disabled onclick="goSection('sec-attr')"
+                        class="px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed transition">
+                    Next (属性入力へ)
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-attr" class="hidden">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">あなたの属性情報について</h2>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">a. 年齢層をお教えください。</label>
+                <select id="attr-age" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>20代前半</option><option>20代後半</option>
+                    <option>30代前半</option><option>30代後半</option>
+                    <option>40代前半</option><option>40代後半</option>
+                    <option>50代前半</option><option>50代後半</option>
+                    <option>60代〜</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">b. 人生の指向性</label>
+                <select id="attr-life" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>目標追求型（目標を決めて追いかける）</option>
+                    <option>巡り合わせ型（巡り合わせの中で今を生きる）</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">c. ご自身の「死生観」について</label>
+                <select id="attr-view" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>現時点のものはあり、言葉にして語ることができる</option>
+                    <option>なんとなく持っているが、言葉にはならない</option>
+                </select>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-policy')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button onclick="goSection('sec-date')" class="px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                    Next (日程選択へ)
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-date" class="hidden">
+            <h2 class="text-xl font-bold mb-6 pb-2 border-b text-slate-900">日程のご都合・お名前の入力</h2>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-700 mb-2">回答者のお名前（本名）</label>
+                <input type="text" id="input-name" placeholder="例：山田 太郎" class="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="mb-6 overflow-x-auto">
+                <label class="block text-sm font-bold text-slate-700 mb-3">参加可能（優先度高）な日程にチェックを入れてください。</label>
+                <div class="space-y-2 bg-slate-50 p-4 rounded-lg border" id="date-checkbox-area">
+                    </div>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button onclick="goSection('sec-attr')" class="px-4 py-2 text-slate-600 hover:underline">戻る</button>
+                <button onclick="submitForm()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium text-white transition">
+                    回答を出席簿に登録する
+                </button>
+            </div>
+        </div>
+
+        <div id="sec-thanks" class="hidden text-center py-10">
+            <div class="text-6xl text-emerald-500 mb-4">✓</div>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">ご回答ありがとうございました</h2>
+            <p class="text-slate-600 mb-6 text-sm">登録されました。主催者画面（admin-mode）で最新の状況を確認できます。</p>
+            <button onclick="location.reload()" class="text-indigo-600 hover:underline text-sm">トップへ戻る</button>
+        </div>
+
+        <div id="sec-admin" class="hidden">
+            <div class="flex justify-between items-center mb-6 pb-2 border-b">
+                <h2 class="text-2xl font-bold text-purple-900">主催者コントロール画面</h2>
+                <button onclick="location.reload()" class="bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded text-sm">ログアウト</button>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="font-bold mb-3 text-slate-800" id="admin-count">現在の回答者一覧</h3>
+                <div class="overflow-x-auto max-h-60 border rounded-lg bg-white">
+                    <table class="w-full text-xs">
+                        <thead class="bg-slate-100 sticky top-0">
+                            <tr>
+                                <th class="p-2 border text-left">氏名</th>
+                                <th class="p-2 border text-left">年齢層</th>
+                                <th class="p-2 border text-left">人生の指向</th>
+                                <th class="p-2 border text-left">死生観</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
+                <h3 class="font-bold text-purple-950 mb-2">🎯 属性連動・自動マッチングエンジン</h3>
+                <p class="text-xs text-purple-900 mb-4">
+                    参加者の3つの属性（年齢・指向・死生観）をスコア化し、最適な2人1組のペアを自動編成します。
+                </p>
+                <button onclick="runMatchingLogic()" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-sm">
+                    自動マッチングを実行する
+                </button>
+            </div>
+
+            <div id="matching-results-area" class="space-y-6 hidden">
+                <h3 class="font-bold text-lg border-b pb-2 text-slate-800">【調整結果】日程別対話ペア案</h3>
+                <div id="matching-results-list" class="space-y-4"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var CONFIG = {
+            password: "open-event-2026",
+            adminPassword: "admin-mode",
+            dates: [
+                "7月10日(金) 19:00-21:00 (オンライン)",
+                "7月11日(土) 14:00-16:00 (都内リアル会場)",
+                "7月17日(金) 19:00-21:00 (オンライン)",
+                "7月19日(日) 10:00-12:00 (オンライン)"
+            ]
+        };
+
+        window.onload = function() {
+            var area = document.getElementById('date-checkbox-area');
+            if (area) {
+                area.innerHTML = '';
+                CONFIG.dates.forEach(function(date, idx) {
+                    area.innerHTML += '<label class="flex items-center space-x-3 p-1 hover:bg-slate-100 rounded cursor-pointer">' +
+                        '<input type="checkbox" name="date-opt" value="' + idx + '" class="h-4 w-4 text-indigo-600">' +
+                        '<span class="text-sm text-slate-700">' + date + '</span>' +
+                    '</label>';
+                });
+            }
+        };
+
+        function goSection(targetId) {
+            ['sec-password', 'sec-policy', 'sec-attr', 'sec-date', 'sec-thanks', 'sec-admin'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            var target = document.getElementById(targetId);
+            if (target) target.classList.remove('hidden');
+        }
+
+        function checkPassword() {
+            var input = document.getElementById('input-pass').value.trim();
+            if (input === CONFIG.password) {
+                goSection('sec-policy');
+            } else if (input === CONFIG.adminPassword) {
+                goSection('sec-admin');
+                renderAdminTable();
+            } else {
+                document.getElementById('pass-error').classList.remove('hidden');
+            }
+        }
+
+        function togglePolicyButton() {
+            var agreed = document.getElementById('check-policy').checked;
+            var btn = document.getElementById('btn-to-attr');
+            if (btn) {
+                btn.disabled = !agreed;
+                btn.className = agreed ? "px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition" : "px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed";
+            }
+        }
+
+        function submitForm() {
+            var name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('お名前を入力してください');
+
+            var boxes = document.querySelectorAll('input[name="date-opt"]:checked');
+            var selectedDates = [];
+            boxes.forEach(function(b) { selectedDates.push(parseInt(b.value)); });
+
+            var age = document.getElementById('attr-age').value;
+            var life = document.getElementById('attr-life').value;
+            var view = document.getElementById('attr-view').value;
+
+            var responseData = {
+                name: name, age: age, life: life, view: view, dates: selectedDates
+            };
+
+            var currentData = JSON.parse(localStorage.getItem('event_db_v4')) || [];
+            currentData.push(responseData);
+            localStorage.setItem('event_db_v4', JSON.stringify(currentData));
+
+            goSection('sec-thanks');
+        }
+
+        function getMockOrSavedData() {
+            var sampleData = [
+                { name: "木村 さくら", age: "20代後半", life: "目標追求型（目標を決めて追いかける）", view: "現時点のものはあり、言葉にして語ることができる", dates: [0, 1, 3] },
+                { name: "高橋 健二", age: "50代前半", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [0, 2] },
+                { name: "渡辺 直樹", age: "30代後半", life: "目標追求型（目標を決めて追いかける）", view: "現時点のものはあり、言葉にして語ることができる", dates: [1, 2] },
+                { name: "佐藤 美咲", age: "20代前半", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [1, 3] },
+                { name: "三浦 浩二", age: "60代〜", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [0, 1] }
+            ];
+            var saved = JSON.parse(localStorage.getItem('event_db_v4')) || [];
+            return sampleData.concat(saved);
+        }
+
+        function renderAdminTable() {
+            var data = getMockOrSavedData();
+            var countEl = document.getElementById('admin-count');
+            if (countEl) countEl.innerText = "現在の回答者一覧 (" + data.length + "名 ※サンプル5名含む)";
+            
+            var tbody = document.getElementById('admin-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            data.forEach(function(p) {
+                tbody.innerHTML += '<tr class="hover:bg-slate-50 border-b">' +
+                    '<td class="p-2 font-bold text-slate-900">' + p.name + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.age + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.life.split('（')[0] + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.view.split('（')[0] + '</td>' +
+                '</tr>';
+            });
+        }
+
+        function runMatchingLogic() {
+            var data = getMockOrSavedData();
+            var resultsList = document.getElementById('matching-results-list');
+            if (!resultsList) return;
+            resultsList.innerHTML = '';
+
+            CONFIG.dates.forEach(function(dateText, dateIdx) {
+                var available = data.filter(function(p) { return p.dates.indexOf(dateIdx) !== -1; });
+                var pairedNames = [];
+                var pairsHtml = '';
+
+                for (var i = 0; i < available.length; i++) {
+                    if (pairedNames.indexOf(available[i].name) !== -1) continue;
+                    var bestMatchIdx = -1;
+                    var bestScore = -999;
+
+                    for (var j = i + 1; j < available.length; j++) {
+                        if (pairedNames.indexOf(available[j].name) !== -1) continue;
+
+                        var score = 0;
+                        var pA = available[i];
+                        var pB = available[j];
+
+                        var sim = (pA.age === pB.age ? 1 : 0) + (pA.life === pB.life ? 1 : 0) + (pA.view === pB.view ? 1 : 0);
+                        score += sim * 3; // 属性が近いペアリング
+
+                        if (score > bestScore) { bestScore = score; bestMatchIdx = j; }
+                    }
+
+                    if (bestMatchIdx !== -1) {
+                        var m1 = available[i];
+                        var m2 = available[bestMatchIdx];
+                        pairedNames.push(m1.name, m2.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-indigo-50/50 border-indigo-100 flex flex-col gap-1">' +
+                            '<div class="font-bold text-indigo-900">対話ペア</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m1.name + ' (' + m1.age + ')</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m2.name + ' (' + m2.age + ')</div>' +
+                        '</div>';
+                    } else {
+                        var m1 = available[i];
+                        pairedNames.push(m1.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-amber-50 border-amber-200">' +
+                            '<div class="font-bold text-amber-900">👤 ' + m1.name + ' (要手動調整)</div>' +
+                            '<div class="text-[11px] text-amber-700">奇数端数のためペアが組めませんでした。</div>' +
+                        '</div>';
+                    }
+                }
+
+                if (available.length === 0) {
+                    pairsHtml = '<div class="text-xs text-slate-400 p-2">この日程の参加希望者はゼロです</div>';
+                }
+
+                resultsList.innerHTML += '<div class="border rounded-xl p-4 bg-white shadow-sm border-slate-200">' +
+                    '<h4 class="font-bold text-slate-900 bg-slate-100 px-3 py-1.5 rounded-md mb-3 text-xs flex justify-between items-center">' +
+                        '<span>📅 ' + dateText + '</span>' +
+                        '<span class="text-indigo-600 font-bold">希望者: ' + available.length + '名</span>' +
+                    '</h4>' +
+                    '<div class="grid md:grid-cols-2 gap-3">' + pairsHtml + '</div>' +
+                '</div>';
+            });
+
+            document.getElementById('matching-results-area').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
