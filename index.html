@@ -68,44 +68,18 @@
 
             <div class="mb-6">
                 <label class="block text-sm font-bold text-slate-700 mb-2">b. 人生の指向性</label>
-                <div class="space-y-2 max-w-xl">
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrLife" value="目標追求型" checked class="h-4 w-4 text-indigo-600">
-                        <span>目標を決めて追いかける</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrLife" value="巡り合わせ型" class="h-4 w-4 text-indigo-600">
-                        <span>巡り合わせの中で今を生きる</span>
-                    </label>
-                </div>
+                <select id="attr-life" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>目標追求型（目標を決めて追いかける）</option>
+                    <option>巡り合わせ型（巡り合わせの中で今を生きる）</option>
+                </select>
             </div>
 
             <div class="mb-6">
                 <label class="block text-sm font-bold text-slate-700 mb-2">c. ご自身の「死生観」について</label>
-                <div class="space-y-2 max-w-xl">
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrView" value="言語化可能" checked class="h-4 w-4 text-indigo-600">
-                        <span>現時点のものはあり、言葉にして語ることができる</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-2.5 border rounded-lg hover:bg-slate-50 cursor-pointer text-sm">
-                        <input type="radio" name="attrView" value="感覚的" class="h-4 w-4 text-indigo-600">
-                        <span>なんとなく持っているが、言葉にはならない</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="mb-6 border-t pt-4 border-slate-100">
-                <label class="block text-sm font-bold text-indigo-900 mb-2">【重要】対話する相手の組み合わせに関するご希望（必須）</label>
-                <div class="space-y-2">
-                    <label class="flex items-center space-x-3 p-3 border rounded-lg bg-indigo-50/50 hover:bg-indigo-50 cursor-pointer">
-                        <input type="radio" name="matchingPref" value="same" checked class="h-4 w-4 text-indigo-600">
-                        <span class="text-sm font-medium text-indigo-950">できるだけ属性情報が近い人との組み合わせを希望</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-3 border rounded-lg bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer">
-                        <input type="radio" name="matchingPref" value="different" class="h-4 w-4 text-indigo-600">
-                        <span class="text-sm font-medium text-emerald-950">できるだけ属性情報が違う人との組み合わせを希望</span>
-                    </label>
-                </div>
+                <select id="attr-view" class="w-full md:w-2/3 px-4 py-2 border rounded-lg bg-white">
+                    <option>現時点のものはあり、言葉にして語ることができる</option>
+                    <option>なんとなく持っているが、言葉にはならない</option>
+                </select>
             </div>
 
             <div class="mt-8 flex justify-between">
@@ -141,7 +115,7 @@
         <div id="sec-thanks" class="hidden text-center py-10">
             <div class="text-6xl text-emerald-500 mb-4">✓</div>
             <h2 class="text-2xl font-bold mb-2 text-slate-800">ご回答ありがとうございました</h2>
-            <p class="text-slate-600 mb-6 text-sm">登録されました。主催者画面（admin-mode）でマッチング結果を確認できます。</p>
+            <p class="text-slate-600 mb-6 text-sm">登録されました。主催者画面（admin-mode）で最新の状況を確認できます。</p>
             <button onclick="location.reload()" class="text-indigo-600 hover:underline text-sm">トップへ戻る</button>
         </div>
 
@@ -161,7 +135,6 @@
                                 <th class="p-2 border text-left">年齢層</th>
                                 <th class="p-2 border text-left">人生の指向</th>
                                 <th class="p-2 border text-left">死生観</th>
-                                <th class="p-2 border text-left">マッチング希望</th>
                             </tr>
                         </thead>
                         <tbody id="admin-table-body"></tbody>
@@ -172,7 +145,7 @@
             <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
                 <h3 class="font-bold text-purple-950 mb-2">🎯 属性連動・自動マッチングエンジン</h3>
                 <p class="text-xs text-purple-900 mb-4">
-                    参加者の3つの属性（年齢・指向・死生観）をスコア化し、それぞれの「近い人がいい」「違う人がいい」という希望を満たす2人1組のペアを自動編成します。
+                    参加者の3つの属性（年齢・指向・死生観）をスコア化し、最適な2人1組のペアを自動編成します。
                 </p>
                 <button onclick="runMatchingLogic()" class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-sm">
                     自動マッチングを実行する
@@ -201,20 +174,24 @@
 
         window.onload = function() {
             var area = document.getElementById('date-checkbox-area');
-            area.innerHTML = '';
-            CONFIG.dates.forEach(function(date, idx) {
-                area.innerHTML += '<label class="flex items-center space-x-3 p-1 hover:bg-slate-100 rounded cursor-pointer">' +
-                    '<input type="checkbox" name="date-opt" value="' + idx + '" class="h-4 w-4 text-indigo-600">' +
-                    '<span class="text-sm text-slate-700">' + date + '</span>' +
-                '</label>';
-            });
+            if (area) {
+                area.innerHTML = '';
+                CONFIG.dates.forEach(function(date, idx) {
+                    area.innerHTML += '<label class="flex items-center space-x-3 p-1 hover:bg-slate-100 rounded cursor-pointer">' +
+                        '<input type="checkbox" name="date-opt" value="' + idx + '" class="h-4 w-4 text-indigo-600">' +
+                        '<span class="text-sm text-slate-700">' + date + '</span>' +
+                    '</label>';
+                });
+            }
         };
 
         function goSection(targetId) {
             ['sec-password', 'sec-policy', 'sec-attr', 'sec-date', 'sec-thanks', 'sec-admin'].forEach(function(id) {
-                document.getElementById(id).classList.add('hidden');
+                var el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
             });
-            document.getElementById(targetId).classList.remove('hidden');
+            var target = document.getElementById(targetId);
+            if (target) target.classList.remove('hidden');
         }
 
         function checkPassword() {
@@ -229,4 +206,132 @@
             }
         }
 
-        function
+        function togglePolicyButton() {
+            var agreed = document.getElementById('check-policy').checked;
+            var btn = document.getElementById('btn-to-attr');
+            if (btn) {
+                btn.disabled = !agreed;
+                btn.className = agreed ? "px-6 py-2.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition" : "px-6 py-2.5 rounded-lg font-medium text-white bg-slate-300 cursor-not-allowed";
+            }
+        }
+
+        function submitForm() {
+            var name = document.getElementById('input-name').value.trim();
+            if (!name) return alert('お名前を入力してください');
+
+            var boxes = document.querySelectorAll('input[name="date-opt"]:checked');
+            var selectedDates = [];
+            boxes.forEach(function(b) { selectedDates.push(parseInt(b.value)); });
+
+            var age = document.getElementById('attr-age').value;
+            var life = document.getElementById('attr-life').value;
+            var view = document.getElementById('attr-view').value;
+
+            var responseData = {
+                name: name, age: age, life: life, view: view, dates: selectedDates
+            };
+
+            var currentData = JSON.parse(localStorage.getItem('event_db_v4')) || [];
+            currentData.push(responseData);
+            localStorage.setItem('event_db_v4', JSON.stringify(currentData));
+
+            goSection('sec-thanks');
+        }
+
+        function getMockOrSavedData() {
+            var sampleData = [
+                { name: "木村 さくら", age: "20代後半", life: "目標追求型（目標を決めて追いかける）", view: "現時点のものはあり、言葉にして語ることができる", dates: [0, 1, 3] },
+                { name: "高橋 健二", age: "50代前半", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [0, 2] },
+                { name: "渡辺 直樹", age: "30代後半", life: "目標追求型（目標を決めて追いかける）", view: "現時点のものはあり、言葉にして語ることができる", dates: [1, 2] },
+                { name: "佐藤 美咲", age: "20代前半", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [1, 3] },
+                { name: "三浦 浩二", age: "60代〜", life: "巡り合わせ型（巡り合わせの中で今を生きる）", view: "なんとなく持っているが、言葉にはならない", dates: [0, 1] }
+            ];
+            var saved = JSON.parse(localStorage.getItem('event_db_v4')) || [];
+            return sampleData.concat(saved);
+        }
+
+        function renderAdminTable() {
+            var data = getMockOrSavedData();
+            var countEl = document.getElementById('admin-count');
+            if (countEl) countEl.innerText = "現在の回答者一覧 (" + data.length + "名 ※サンプル5名含む)";
+            
+            var tbody = document.getElementById('admin-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            data.forEach(function(p) {
+                tbody.innerHTML += '<tr class="hover:bg-slate-50 border-b">' +
+                    '<td class="p-2 font-bold text-slate-900">' + p.name + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.age + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.life.split('（')[0] + '</td>' +
+                    '<td class="p-2 text-slate-600">' + p.view.split('（')[0] + '</td>' +
+                '</tr>';
+            });
+        }
+
+        function runMatchingLogic() {
+            var data = getMockOrSavedData();
+            var resultsList = document.getElementById('matching-results-list');
+            if (!resultsList) return;
+            resultsList.innerHTML = '';
+
+            CONFIG.dates.forEach(function(dateText, dateIdx) {
+                var available = data.filter(function(p) { return p.dates.indexOf(dateIdx) !== -1; });
+                var pairedNames = [];
+                var pairsHtml = '';
+
+                for (var i = 0; i < available.length; i++) {
+                    if (pairedNames.indexOf(available[i].name) !== -1) continue;
+                    var bestMatchIdx = -1;
+                    var bestScore = -999;
+
+                    for (var j = i + 1; j < available.length; j++) {
+                        if (pairedNames.indexOf(available[j].name) !== -1) continue;
+
+                        var score = 0;
+                        var pA = available[i];
+                        var pB = available[j];
+
+                        var sim = (pA.age === pB.age ? 1 : 0) + (pA.life === pB.life ? 1 : 0) + (pA.view === pB.view ? 1 : 0);
+                        score += sim * 3; // 属性が近いペアリング
+
+                        if (score > bestScore) { bestScore = score; bestMatchIdx = j; }
+                    }
+
+                    if (bestMatchIdx !== -1) {
+                        var m1 = available[i];
+                        var m2 = available[bestMatchIdx];
+                        pairedNames.push(m1.name, m2.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-indigo-50/50 border-indigo-100 flex flex-col gap-1">' +
+                            '<div class="font-bold text-indigo-900">対話ペア</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m1.name + ' (' + m1.age + ')</div>' +
+                            '<div class="text-xs text-slate-700">👤 ' + m2.name + ' (' + m2.age + ')</div>' +
+                        '</div>';
+                    } else {
+                        var m1 = available[i];
+                        pairedNames.push(m1.name);
+                        pairsHtml += '<div class="p-3 border rounded-lg bg-amber-50 border-amber-200">' +
+                            '<div class="font-bold text-amber-900">👤 ' + m1.name + ' (要手動調整)</div>' +
+                            '<div class="text-[11px] text-amber-700">奇数端数のためペアが組めませんでした。</div>' +
+                        '</div>';
+                    }
+                }
+
+                if (available.length === 0) {
+                    pairsHtml = '<div class="text-xs text-slate-400 p-2">この日程の参加希望者はゼロです</div>';
+                }
+
+                resultsList.innerHTML += '<div class="border rounded-xl p-4 bg-white shadow-sm border-slate-200">' +
+                    '<h4 class="font-bold text-slate-900 bg-slate-100 px-3 py-1.5 rounded-md mb-3 text-xs flex justify-between items-center">' +
+                        '<span>📅 ' + dateText + '</span>' +
+                        '<span class="text-indigo-600 font-bold">希望者: ' + available.length + '名</span>' +
+                    '</h4>' +
+                    '<div class="grid md:grid-cols-2 gap-3">' + pairsHtml + '</div>' +
+                '</div>';
+            });
+
+            document.getElementById('matching-results-area').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
