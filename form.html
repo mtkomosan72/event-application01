@@ -293,7 +293,7 @@
                         var pB = available[j];
 
                         var sim = (pA.age === pB.age ? 1 : 0) + (pA.life === pB.life ? 1 : 0) + (pA.view === pB.view ? 1 : 0);
-                        score += sim * 3; // 属性が近いペアリング
+                        score += sim * 3;
 
                         if (score > bestScore) { bestScore = score; bestMatchIdx = j; }
                     }
